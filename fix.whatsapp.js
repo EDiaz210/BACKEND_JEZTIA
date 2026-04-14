@@ -6,67 +6,47 @@ const filePath = path.resolve(
 );
 
 try {
+  // Siempre aplicar los fixes (no cached)
   if (!fs.existsSync(filePath)) {
-    console.log("⚠ No se encontró Store.js en la ruta esperada.");
+    console.log("⚠ No se encontró Store.js");
     process.exit(0);
   }
 
   let content = fs.readFileSync(filePath, "utf8");
-  let lines = content.split("\n");
+  const originalContent = content;
   let modified = false;
 
-  // ==========================================================
-  // 1) FIX: Comentar LID Migration
-  // ==========================================================
-
-  const lidKeyword = "Lid1X1MigrationUtils.isLidMigrated";
-
-  const updatedLines = lines.map(line => {
-    if (line.includes(lidKeyword) && !line.trim().startsWith("//")) {
-      modified = true;
-      return "//" + line; // Comentar la línea
-    }
-    return line;
-  });
-
-  content = updatedLines.join("\n");
-
-  // ==========================================================
-  // 2) FIX: Restaurar Store.getChat()
-  // ==========================================================
-
-  const getChatFix = `
-/* ======== FIX WHATSAPP: restaurar getChat ======== */
-if (!window.Store.getChat) {
-    window.Store.getChat = function (id) {
-        return (
-            window.Store.Chat._find(id) ||
-            window.Store.Chat.get(id) ||
-            window.Store.Chat._get(id)
-        );
-    };
-}
-/* ======== END FIX WHATSAPP ======== */
-`;
-
-  if (!content.includes("FIX WHATSAPP: restaurar getChat")) {
-    // Insertamos el fix justo después del primer "window.Store"
+  // FIX 1: Deshabilitar LID Migration
+  if (content.includes("Lid1X1MigrationUtils.isLidMigrated")) {
     content = content.replace(
-      /window\.Store[\s\S]*?=/,
-      match => match + "\n" + getChatFix + "\n"
+      /Lid1X1MigrationUtils\.isLidMigrated/g,
+      "false"
     );
-
+    console.log("✔ FIX 1: LID Migration deshabilitado");
     modified = true;
   }
 
-  // ==========================================================
+  // FIX 2: Proteger markedUnread con try-catch
+  // Buscar la función que accede a markedUnread y envuelta en try-catch
+  if (!content.includes("markedUnread /* PROTECTED */")) {
+    // Reemplazar accesos directos a markedUnread con versión segura
+    content = content.replace(
+      /(\w+)\.markedUnread/g,
+      "($1 && $1.markedUnread !== undefined ? $1.markedUnread /* PROTECTED */ : false)"
+    );
+    
+    if (content !== originalContent) {
+      console.log("✔ FIX 2: markedUnread protegido");
+      modified = true;
+    }
+  }
 
-  if (modified) {
+  if (modified || content !== originalContent) {
     fs.writeFileSync(filePath, content, "utf8");
-    console.log("✔ Fixes aplicados correctamente a whatsapp-web.js");
+    console.log("✔ Fixes aplicados");
   } else {
-    console.log("ℹ Los fixes ya estaban aplicados.");
+    console.log("ℹ Sin cambios necesarios");
   }
 } catch (error) {
-  console.error("Error aplicando el fix:", error);
+  console.error("⚠ Error:", error.message);
 }
