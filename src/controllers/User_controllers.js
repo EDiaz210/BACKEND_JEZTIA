@@ -322,21 +322,21 @@ const baneoPasante = async (req, res) => {
   const { id } = req.params;
   // Validar que el usuario autenticado sea administrador
   if (!req.userBDD || req.userBDD.rol !== "administrador") {
-    return res.status(403).json({ msg: "Acceso denegado: solo administradores pueden banear jugadores" });
+    return res.status(403).json({ msg: "Acceso denegado: solo administradores pueden banear pasantes" });
   }
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ msg: "Lo sentimos, debe ser un id válido" });
   }
   const pasanteBDD = await User.findOne({ _id: id, rol: "pasante" });
   if (!pasanteBDD) {
-    return res.status(404).json({ msg: "Jugador no encontrado" });
+    return res.status(404).json({ msg: "Pasante no encontrado" });
   }
   if (pasanteBDD.status === false) {
-    return res.status(404).json({ msg: "Este Jugador ya se encuentra Baneado por comportamiento inapropiado" });
+    return res.status(404).json({ msg: "Este Pasante ya se encuentra Baneado por comportamiento inapropiado" });
   }
   pasanteBDD.status = false;
   await pasanteBDD.save();
-  res.status(200).json({ msg: `El jugador ${pasanteBDD.username} ha sido baneado por comportamiento inapropiado` });
+  res.status(200).json({ msg: `El Pasante ${pasanteBDD.username} ha sido baneado por comportamiento inapropiado` });
 };
 
 // Listar pasantes
