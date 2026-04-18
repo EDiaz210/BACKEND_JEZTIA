@@ -16,10 +16,7 @@ const createFeedback = async (req, res) => {
       studentName: req.userBDD.nombre
     };
     const feedback = await Feedback.create(feedbackData);
-    res.status(201).json({
-      status: 'success',
-      data:  feedback 
-    });
+    res.status(200).json({ msg: 'Feedback creado exitosamente' });
   } catch (error) {
     res.status(400).json({
       status: 'error',
