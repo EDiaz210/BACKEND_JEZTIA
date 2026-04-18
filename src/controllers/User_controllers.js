@@ -206,7 +206,7 @@ const updatePerfil = async (req, res) => {
       if (req.body[campo] !== undefined) usuario[campo] = req.body[campo];
     });
     await usuario.save();
-    res.status(200).json(usuario);
+    res.status(200).json({ msg: "Perfil actualizado correctamente" });
   } catch (error) {
     res.status(500).json({ msg: 'Error al actualizar perfil', error });
   }
