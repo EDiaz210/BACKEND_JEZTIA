@@ -216,7 +216,7 @@ const getFeedbacksByCategory = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).json({
       results: feedbacks.length,
-      data: {[`Estos son los Feedbacks de la categoria ${category}`]: feedbacks}
+      data: {[`Estos son los Feedbacks de la categoria ${filter}`]: feedbacks}
     });
   } catch (error) {
     res.status(500).json({
