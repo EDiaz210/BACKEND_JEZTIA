@@ -203,7 +203,7 @@ const deleteFeedback = async (req, res) => {
         message: 'Feedback no encontrado'
       });
     }
-    res.status(204).json({
+    res.status(200).json({
       status: 'success',
       message: 'Feedback eliminado con éxito'
     });
