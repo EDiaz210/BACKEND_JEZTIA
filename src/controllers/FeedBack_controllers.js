@@ -19,7 +19,6 @@ const createFeedback = async (req, res) => {
     res.status(200).json({ msg: 'Feedback creado exitosamente' });
   } catch (error) {
     res.status(400).json({
-      status: 'error',
       message: error.message
     });
   }
@@ -30,7 +29,6 @@ const getAllFeedbacks = async (req, res) => {
   try {
     if (!req.userBDD || (req.userBDD.rol !== 'administrador' && req.userBDD.rol !== 'pasante')) {
       return res.status(403).json({
-        status: 'error',
         message: 'No tienes permiso para ver todos los feedbacks'
       });
     }
@@ -38,13 +36,10 @@ const getAllFeedbacks = async (req, res) => {
       .populate('studentId', 'nombre email')
       .sort({ createdAt: -1 });
     res.status(200).json({
-      status: 'success',
       results: feedbacks.length,
-      data:  feedbacks 
-    });
+      data: { "Feedbacks Encontrados": feedbacks }    });
   } catch (error) {
-    res.status(500).json({
-      status: 'error',
+    res.status(500).json(
       message: error.message
     });
   }
@@ -55,20 +50,17 @@ const getMyFeedbacks = async (req, res) => {
   try {
     if (!req.userBDD || req.userBDD.rol !== 'estudiante') {
       return res.status(403).json({
-        status: 'error',
         message: 'Solo los estudiantes pueden ver sus propios feedbacks'
       });
     }
     const feedbacks = await Feedback.find({ studentId: req.userBDD._id})
       .sort({ createdAt: -1 });
     res.status(200).json({
-      status: 'success',
       results: feedbacks.length,
-      data: { feedbacks }
+      data: { "Feedbacks Propios Encontrados": feedbacks }
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
       message: error.message
     });
   }
@@ -81,7 +73,6 @@ const getFeedback = async (req, res) => {
       .populate('studentId', 'nombre email');
     if (!feedback) {
       return res.status(404).json({
-        status: 'error',
         message: 'Feedback no encontrado'
       });
     }
@@ -90,19 +81,16 @@ const getFeedback = async (req, res) => {
       // Estudiante solo puede ver sus propios feedbacks
       if (feedback.studentId._id.toString() !== req.userBDD._id.toString()) {
         return res.status(403).json({
-          status: 'error',
           message: 'No tienes permiso para ver este feedback'
         });
       }
     }
     // Admin y Pasante pueden ver cualquier feedback sin restricción
     res.status(200).json({
-      status: 'success',
-      data: { feedback }
+      data: { "Feedback encontrado con éxito": feedback }
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
       message: error.message
     });
   }
@@ -113,7 +101,6 @@ const respondToFeedback = async (req, res) => {
   try {
     if (!req.userBDD || req.userBDD.rol !== 'administrador') {
       return res.status(403).json({
-        status: 'error',
         message: 'Solo los administradores pueden responder a los feedbacks'
       });
     }
@@ -137,7 +124,6 @@ const respondToFeedback = async (req, res) => {
       });
     }
     res.status(200).json({
-      status: 'success',
       data: { "Se ha respondido el feedback": feedback }
     });
   } catch (error) {
@@ -153,14 +139,12 @@ const updateFeedbackStatus = async (req, res) => {
   try {
     if (!req.userBDD || req.userBDD.rol !== 'administrador') {
       return res.status(403).json({
-        status: 'error',
         message: 'Solo los administradores pueden cambiar el estado'
       });
     }
     const { status } = req.body;
     if (!['Pendiente', 'Respondido'].includes(status)) {
       return res.status(400).json({
-        status: 'error',
         message: 'Estado no válido. Solo se permiten: Pendiente, Respondido'
       });
     }
@@ -192,24 +176,20 @@ const deleteFeedback = async (req, res) => {
   try {
     if (!req.userBDD || req.userBDD.rol !== 'administrador') {
       return res.status(403).json({
-        status: 'error',
         message: 'Solo los administradores pueden eliminar feedbacks'
       });
     }
     const feedback = await Feedback.findByIdAndDelete(req.params.id);
     if (!feedback) {
       return res.status(404).json({
-        status: 'error',
         message: 'Feedback no encontrado'
       });
     }
     res.status(200).json({
-      status: 'success',
       message: 'Feedback eliminado con éxito'
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
       message: error.message
     });
   }
