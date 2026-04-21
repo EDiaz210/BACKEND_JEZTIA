@@ -215,9 +215,8 @@ const getFeedbacksByCategory = async (req, res) => {
       .populate('studentId', 'nombre email')
       .sort({ createdAt: -1 });
     res.status(200).json({
-      status: 'success',
       results: feedbacks.length,
-      data: { feedbacks }
+      data: { "Estos son los Feedbacks de la categoria",category,":" :feedbacks }
     });
   } catch (error) {
     res.status(500).json({
