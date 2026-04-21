@@ -206,7 +206,7 @@ const updatePerfil = async (req, res) => {
       if (req.body[campo] !== undefined) usuario[campo] = req.body[campo];
     });
     await usuario.save();
-    res.status(200).json(usuario);
+    res.status(200).json({ msg: "Perfil actualizado correctamente" });
   } catch (error) {
     res.status(500).json({ msg: 'Error al actualizar perfil', error });
   }
@@ -322,21 +322,21 @@ const baneoPasante = async (req, res) => {
   const { id } = req.params;
   // Validar que el usuario autenticado sea administrador
   if (!req.userBDD || req.userBDD.rol !== "administrador") {
-    return res.status(403).json({ msg: "Acceso denegado: solo administradores pueden banear jugadores" });
+    return res.status(403).json({ msg: "Acceso denegado: solo administradores pueden banear pasantes" });
   }
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ msg: "Lo sentimos, debe ser un id válido" });
   }
   const pasanteBDD = await User.findOne({ _id: id, rol: "pasante" });
   if (!pasanteBDD) {
-    return res.status(404).json({ msg: "Jugador no encontrado" });
+    return res.status(404).json({ msg: "Pasante no encontrado" });
   }
   if (pasanteBDD.status === false) {
-    return res.status(404).json({ msg: "Este Jugador ya se encuentra Baneado por comportamiento inapropiado" });
+    return res.status(404).json({ msg: "Este Pasante ya se encuentra Baneado por comportamiento inapropiado" });
   }
   pasanteBDD.status = false;
   await pasanteBDD.save();
-  res.status(200).json({ msg: `El jugador ${pasanteBDD.username} ha sido baneado por comportamiento inapropiado` });
+  res.status(200).json({ msg: `El Pasante ${pasanteBDD.username} ha sido baneado por comportamiento inapropiado` });
 };
 
 // Listar pasantes
@@ -367,21 +367,21 @@ const baneoEstudiante = async (req, res) => {
   const { id } = req.params;
   // Validar que el usuario autenticado sea administrador
   if (!req.userBDD || req.userBDD.rol !== "administrador") {
-    return res.status(403).json({ msg: "Acceso denegado: solo administradores pueden banear jugadores" });
+    return res.status(403).json({ msg: "Acceso denegado: solo administradores pueden banear estudiantes" });
   }
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ msg: "Lo sentimos, debe ser un id válido" });
   }
   const estudianteBDD = await User.findOne({ _id: id, rol: "estudiante" });
   if (!estudianteBDD) {
-    return res.status(404).json({ msg: "Jugador no encontrado" });
+    return res.status(404).json({ msg: "Estudiante no encontrado" });
   }
   if (estudianteBDD.status === false) {
-    return res.status(404).json({ msg: "Este Jugador ya se encuentra Baneado por comportamiento inapropiado" });
+    return res.status(404).json({ msg: "Este Estudiante ya se encuentra Baneado por comportamiento inapropiado" });
   }
   estudianteBDD.status = false;
   await estudianteBDD.save();
-  res.status(200).json({ msg: `El estudiante ${estudianteBDD.username} ha sido baneado por comportamiento inapropiado` });
+  res.status(200).json({ msg: `El Estudiante ${estudianteBDD.username} ha sido baneado por comportamiento inapropiado` });
 };
 
 // Listar estudiantes
@@ -411,7 +411,7 @@ const detalleEstudiante = async (req, res) => {
   if (!req.userBDD || req.userBDD.rol !== "administrador") {
     return res.status(403).json({ msg: "Acceso denegado: solo administradores pueden ver detalles de estudiantes" });
   }
-  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ msg: `Lo sentimos, no existe el jugador ${id}` });
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ msg: `Lo sentimos, no existe el estudiante ${id}` });
   const estudiante = await User.findOne({ _id: id, rol: "estudiante" }).select("-createdAt -updatedAt -__v -password");
   res.status(200).json(estudiante);
 };
