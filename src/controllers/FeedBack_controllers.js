@@ -205,7 +205,7 @@ const deleteFeedback = async (req, res) => {
     }
     res.status(204).json({
       status: 'success',
-      data: null
+      message: 'Feedback eliminado con éxito'
     });
   } catch (error) {
     res.status(500).json({
