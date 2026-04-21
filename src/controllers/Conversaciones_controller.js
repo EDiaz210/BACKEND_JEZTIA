@@ -23,7 +23,6 @@ export const crearConversacion = async (req, res) => {
     });
 
     res.json({
-      ok: true,
       id: nueva._id,
       message: "Conversación creada correctamente",
     });
@@ -198,7 +197,6 @@ export const enviarPregunta = async (req, res) => {
     
     // Enviar error como streaming
     res.write(`data: ${JSON.stringify({
-      etapa: 'error',
       respuesta: 'Lo siento, hubo un error al procesar tu pregunta.'
     })}\n\n`);
     res.end();
@@ -291,7 +289,6 @@ export const calificarRespuesta = async (req, res) => {
       }
 
       res.json({
-        ok: true,
         message: mensaje_respuesta,
         calificacion_promedio: resultado.calificacion_promedio,
         total_calificaciones: resultado.total_calificaciones,
@@ -299,7 +296,6 @@ export const calificarRespuesta = async (req, res) => {
       });
     } else {
       res.status(400).json({
-        ok: false,
         error: resultado.error || 'Error al calificar la respuesta'
       });
     }
@@ -362,7 +358,7 @@ export const eliminarConversacion = async (req, res) => {
 
     await Conversacion.findByIdAndDelete(id);
 
-    res.json({ ok: true, message: "Conversación eliminada correctamente" });
+    res.json({ message: "Conversación eliminada correctamente" });
   } catch (error) {
     console.error("Error al eliminar conversación:", error);
     res.status(500).json({ error: "Error al eliminar conversación" });
