@@ -138,7 +138,7 @@ const respondToFeedback = async (req, res) => {
     }
     res.status(200).json({
       status: 'success',
-      data: { feedback }
+      data: { "Se ha respondido el feedback": feedback }
     });
   } catch (error) {
     res.status(400).json({
