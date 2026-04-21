@@ -18,7 +18,7 @@ router.post("/send-message", verificarTokenJWT, upload.array("files"), sendMessa
 
 router.get("/listarmensajes", verificarTokenJWT, listaMensajes);
 router.delete("/mensajes/:id", verificarTokenJWT, deleteMessage);
-router.post("/send-message-n8n", verificarTokenJWT, sendMessageN8N);
+router.post("/send-message-n8n", sendMessageN8N);
 
 // Logout
 router.get("/logout", verificarTokenJWT, logout);

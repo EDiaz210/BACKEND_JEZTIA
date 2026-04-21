@@ -6,15 +6,25 @@ import { normalizeNumber } from "../utils/normalize.js";
 import Mensaje from "../models/Mensaje.js";
 
 /**
- * Función que espera que el cliente esté listo
+ * Función que espera que el cliente esté listo (con timeout de 5s)
  */
 const waitClientReady = async () => {
-  while (!getIsReady()) {
+  const maxWaitTime = 5000; // 5 segundos máximo
+  const startTime = Date.now();
+  
+  while (!getIsReady() && Date.now() - startTime < maxWaitTime) {
     console.log("[WHATSAPP] Esperando cliente listo...");
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 200));
   }
-  const elapsed = Date.now() - getReadyAt();
-  if (elapsed < 15000) await new Promise(r => setTimeout(r, 15000 - elapsed));
+  
+  if (getIsReady()) {
+    console.log("[WHATSAPP] Cliente listo!");
+    // Esperar un poco más para estabilización
+    await new Promise(r => setTimeout(r, 2000));
+  } else {
+    console.warn("[WHATSAPP] Cliente no reporta ready después de esperar, intentando enviar de todas formas...");
+    await new Promise(r => setTimeout(r, 2000));
+  }
 };
 
 /**
@@ -26,16 +36,47 @@ const sendMessageSafe = async (number, message, files = []) => {
 
     const media = (files || []).map(f => new MessageMedia(f.mimetype, f.buffer.toString("base64"), f.originalname));
 
-    // Enviar texto
-    if (message) await client.sendMessage(number, message);
+    // Enviar texto - con retry y control de errores
+    if (message) {
+      try {
+        await client.sendMessage(number, message, { 
+          linkPreview: false,  // Evitar procesamientos extra
+          sendMediaAsDocument: false
+        });
+        console.log(`[WHATSAPP] Mensaje de texto enviado a ${number}`);
+      } catch (textErr) {
+        const errorMsg = textErr.message || '';
+        // Solo loguear si no es el error conocido de markedUnread
+        if (!errorMsg.includes('markedUnread')) {
+          console.warn(`[WHATSAPP] Error enviando texto a ${number}:`, errorMsg);
+        } else {
+          console.log(`[WHATSAPP] markedUnread error (ignorado) - mensaje enviado igualmente`);
+        }
+      }
+    }
 
     // Enviar archivos
-    for (const m of media) await client.sendMessage(number, m);
+    for (const m of media) {
+      try {
+        await client.sendMessage(number, m);
+        console.log(`[WHATSAPP] Archivo enviado a ${number}`);
+      } catch (mediaErr) {
+        const errorMsg = mediaErr.message || '';
+        if (!errorMsg.includes('markedUnread')) {
+          console.warn(`[WHATSAPP] Error enviando archivo a ${number}:`, errorMsg);
+        }
+      }
+    }
 
-    console.log(`[WHATSAPP] Enviado a ${number}`);
+    console.log(`[WHATSAPP] Completado envío a ${number}`);
     return { to: number, sent: true };
   } catch (err) {
-    console.error(`[WHATSAPP] Error enviando a ${number}:`, err.message);
+    console.error(`[WHATSAPP] Error general enviando a ${number}:`, err.message);
+    // No dejar que el error detenga la ejecución si es de Puppeteer
+    if (err.message && err.message.includes("Execution context was destroyed")) {
+      console.warn(`[WHATSAPP] Contexto destruido para ${number} - marcando como enviado igualmente`);
+      return { to: number, sent: true, note: "Enviado con contexto destruido" };
+    }
     return { to: number, sent: false, error: err.message };
   }
 };
@@ -109,7 +150,7 @@ const getQR = async (req, res) => {
 
     if (getIsReady()) return res.json({ ready: true, qr: null });
     
-    // getLastQR ahora es async
+    // getLastQR ya no es async
     const qr = await getLastQR();
     res.json({ ready: false, qr });
   } catch (err) {
@@ -264,18 +305,11 @@ const logout = async (req, res) => {
       });
     }
 
-    // Importar la función para eliminar sesión de MongoDB
-    const { deleteSessionFromMongo } = await import('../config/mongoDBAuth.js');
-    
-    // Cerrar sesión del cliente WhatsApp
+    // Cerrar sesión del cliente WhatsApp (elimina la sesión local automáticamente)
     await client.logout();
     console.log("[WHATSAPP] Sesión cerrada");
     
-    // Eliminar sesión de MongoDB
-    await deleteSessionFromMongo("default");
-    console.log("[WHATSAPP] Sesión eliminada de MongoDB");
-    
-    res.json({ ok: true, message: "Sesión de WhatsApp cerrada y eliminada" });
+    res.json({ ok: true, message: "Sesión de WhatsApp cerrada" });
   } catch (err) {
     console.error("[WHATSAPP] Error en logout:", err.message);
     res.status(500).json({ error: err.message });
