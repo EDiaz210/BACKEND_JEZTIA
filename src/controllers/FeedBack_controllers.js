@@ -119,7 +119,6 @@ const respondToFeedback = async (req, res) => {
     ).populate('studentId', 'nombre email');
     if (!feedback) {
       return res.status(404).json({
-        status: 'error',
         message: 'Feedback no encontrado'
       });
     }
@@ -155,17 +154,14 @@ const updateFeedbackStatus = async (req, res) => {
     ).populate('studentId', 'nombre email');
     if (!feedback) {
       return res.status(404).json({
-        status: 'error',
         message: 'Feedback no encontrado'
       });
     }
     res.status(200).json({
-      status: 'success',
-      data: { feedback }
+      data: { "Se ha cambiado con éxito el estado del Feedback": feedback }
     });
   } catch (error) {
     res.status(400).json({
-      status: 'error',
       message: error.message
     });
   }
