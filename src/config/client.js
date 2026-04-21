@@ -3,46 +3,12 @@ import pkg from "whatsapp-web.js";
 const { Client, MessageMedia } = pkg;
 import qrcode from "qrcode";
 import LocalAuthStrategy from "./localAuth.js";
-import os from "os";
-import path from "path";
-import fs from "fs";
-import { globSync } from "glob";
 
 let lastQR = null;
 let readyAt = null;
 
 // Crear instancia de autenticación local
 const localAuth = new LocalAuthStrategy("default");
-
-// Función para encontrar Chrome en el sistema
-const findChromePath = () => {
-  // Primero intentar variable de entorno
-  if (process.env.CHROME_BIN && fs.existsSync(process.env.CHROME_BIN)) {
-    console.log(`[PUPPETEER] Chrome encontrado en CHROME_BIN: ${process.env.CHROME_BIN}`);
-    return process.env.CHROME_BIN;
-  }
-
-  // En Render, buscar en el directorio de caché
-  const cacheDir = process.env.PUPPETEER_CACHE_DIR || 
-    path.join(process.env.HOME || os.homedir(), ".cache", "puppeteer");
-  
-  try {
-    const chromePaths = globSync(`${cacheDir}/chrome/linux-*/chrome-linux64/chrome`);
-    if (chromePaths.length > 0) {
-      console.log(`[PUPPETEER] Chrome encontrado en caché: ${chromePaths[0]}`);
-      return chromePaths[0];
-    }
-  } catch (e) {
-    console.warn(`[PUPPETEER] Error buscando Chrome en caché:`, e.message);
-  }
-
-  console.log(`[PUPPETEER] No se especifica executablePath - Puppeteer intentará descargar`);
-  return undefined;
-};
-
-// Configurar ruta de caché para Render
-const cacheDir = process.env.PUPPETEER_CACHE_DIR || 
-  path.join(process.env.HOME || os.homedir(), ".cache", "puppeteer");
 
 const client = new Client({
   authStrategy: localAuth, // Usar autenticación local
@@ -64,8 +30,6 @@ const client = new Client({
       "--disable-backgrounding-occluded-windows",
     ],
     timeout: 60000,
-    executablePath: findChromePath(),
-    cacheDirectory: cacheDir,
   },
   bypassCSP: true,
 });
