@@ -39,7 +39,7 @@ const getAllFeedbacks = async (req, res) => {
       results: feedbacks.length,
       data: { "Feedbacks Encontrados": feedbacks }    });
   } catch (error) {
-    res.status(500).json(
+    res.status(500).json({
       message: error.message
     });
   }
