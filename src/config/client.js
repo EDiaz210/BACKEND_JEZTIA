@@ -48,9 +48,7 @@ function initializeClient() {
 
   client.on("qr", async (qr) => {
     try {
-      // Crear directorio de autenticación cuando se escanea el QR
-      localAuth.ensureDirectory();
-      
+      // NO crear directorio aquí - solo cuando se escanee el QR (authenticated)
       lastQR = await qrcode.toDataURL(qr);
       console.log("[WHATSAPP] QR generado. Escanea en /qr");
     } catch (err) {
@@ -60,6 +58,8 @@ function initializeClient() {
 
   client.on("authenticated", async (session) => {
     console.log("[WHATSAPP] Sesión autenticada correctamente");
+    // Marcar como autenticado y crear directorio aquí
+    localAuth.markAsAuthenticated();
     if (!readyAt) {
       readyAt = Date.now();
       console.log("[WHATSAPP] Cliente marcado como listo");
@@ -151,8 +151,13 @@ const getClient = () => {
   return client;
 };
 
+// Función pública para inicializar WhatsApp cuando sea necesario
+const initializeWhatsApp = () => {
+  return initializeClient();
+};
+
 // Exportar función para inicializar manualmente si es necesario
-export { getClient, getIsReady, getReadyAt, getLastQR };
+export { getClient, initializeWhatsApp, getIsReady, getReadyAt, getLastQR };
 
 // Para compatibilidad con código existente que importe 'client'
 const clientProxy = new Proxy({}, {

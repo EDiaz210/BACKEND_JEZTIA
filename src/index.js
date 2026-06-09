@@ -12,10 +12,15 @@
 
   const { app } = await import('./server.js');
   const connection = await import('./database.js').then(m => m.default);
+  const { initializeWhatsApp } = await import('./config/client.js');
 
   connection();
 
   app.listen(app.get('port'), () => {
     console.log(`Server ok on http://localhost:${app.get('port')}`);
+    
+    // Inicializar WhatsApp después de que el servidor esté listo
+    console.log('[INIT] Inicializando WhatsApp...');
+    initializeWhatsApp();
   });
 })();
