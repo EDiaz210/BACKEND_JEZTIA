@@ -77,7 +77,7 @@ export const enviarPregunta = async (req, res) => {
       console.log(`[DEBUG] Token extraído: ${token ? token.substring(0, 20) + '...' : 'VACÍO'}`);
       
       if (!token) {
-        console.warn("⚠️  No se encontró token JWT en el request");
+        console.warn("No se encontró token JWT en el request");
       }
       
       //  LLAMAR A PYTHON CON STREAMING (INCLUYENDO TOKEN)
@@ -99,7 +99,7 @@ export const enviarPregunta = async (req, res) => {
         headers,
         body: JSON.stringify({
           pregunta: question,
-          historial: req.body.historial || [],  // ✅ PASAR HISTORIAL DE FRONTEND
+          historial: req.body.historial || [],  // PASAR HISTORIAL DE FRONTEND
           streaming: true,
           rol: tipoUsuario,
           usuario_id: usuario._id.toString()
@@ -244,7 +244,7 @@ export const calificarRespuesta = async (req, res) => {
     console.log(`[DEBUG] Token extraído: ${token ? token.substring(0, 20) + '...' : 'VACÍO'}`);
     
     if (!token) {
-      console.warn("⚠️  No se encontró token JWT en el request");
+      console.warn("No se encontró token JWT en el request");
     }
 
     //  ENVIAR CALIFICACIÓN AL BACKEND PYTHON (INCLUYENDO TOKEN)

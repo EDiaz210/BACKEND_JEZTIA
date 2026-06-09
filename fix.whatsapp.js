@@ -43,9 +43,9 @@ try {
 
   if (modified || content !== originalContent) {
     fs.writeFileSync(filePath, content, "utf8");
-    console.log("✔ Fixes aplicados");
+    console.log("Fixes aplicados");
   } else {
-    console.log("ℹ Sin cambios necesarios");
+    console.log("Sin cambios necesarios");
   }
 } catch (error) {
   console.error("⚠ Error:", error.message);
