@@ -129,7 +129,7 @@ const sendMessage = async (req, res) => {
     });
     await nuevoMensaje.save();
 
-    res.json({ ok: true, results });
+    res.json({ "Se ha enviado el mensaje a los números indicados": results });
   } catch (err) {
     console.error("Error sendMessage:", err);
     res.status(500).json({ error: err.message });
@@ -152,7 +152,7 @@ const getQR = async (req, res) => {
     
     // getLastQR ya no es async
     const qr = await getLastQR();
-    res.json({ ready: false, qr });
+    res.json({ ready: false, qr});
   } catch (err) {
     console.error("Error en getQR:", err);
     res.status(500).json({ error: err.message });
