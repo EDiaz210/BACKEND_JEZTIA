@@ -19,7 +19,7 @@ dotenv.config()
 //app.set('port', process.env.CLOUDINARY || 3000) //process es paara datos sensibles
 const corsOptions = {
   origin: [
-    process.env.FRONTEND_URL
+    process.env.FRONTEND_URL, 
   ],
   methods: ["GET", "POST", "PUT", "DELETE",'PATCH', "OPTIONS"],
   credentials: true,

@@ -14,11 +14,15 @@ export class LocalAuthStrategy extends LocalAuth {
     const baseDir = path.join(process.cwd(), '.wwebjs_auth');
     super({ clientId, dataPath: baseDir });
     this.clientId = clientId;
+    this.baseDir = baseDir;
     
-    // Crear directorio si no existe
-    if (!fs.existsSync(baseDir)) {
-      fs.mkdirSync(baseDir, { recursive: true });
-      console.log(`[Local Auth] Directorio de sesión creado: ${baseDir}`);
+    // NO crear directorio aquí - se creará cuando se escanee el QR
+  }
+
+  ensureDirectory() {
+    if (!fs.existsSync(this.baseDir)) {
+      fs.mkdirSync(this.baseDir, { recursive: true });
+      console.log(`[Local Auth] Directorio de sesión creado: ${this.baseDir}`);
     }
   }
 }
