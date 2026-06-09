@@ -19,8 +19,12 @@
   app.listen(app.get('port'), () => {
     console.log(`Server ok on http://localhost:${app.get('port')}`);
     
-    // Inicializar WhatsApp después de que el servidor esté listo
-    console.log('[INIT] Inicializando WhatsApp...');
-    initializeWhatsApp();
+    // Inicializar WhatsApp solo en desarrollo
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[INIT] Inicializando WhatsApp...');
+      initializeWhatsApp();
+    } else {
+      console.log('[INIT] WhatsApp deshabilitado en producción');
+    }
   });
 })();
