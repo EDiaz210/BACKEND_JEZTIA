@@ -20,33 +20,38 @@ function initializeClient() {
   // Crear instancia de autenticación local AQUÍ (no al cargar el módulo)
   localAuth = new LocalAuthStrategy("default");
 
+  // 1. Detectar si hay una ruta definida en el entorno (Útil para tu servidor Ubuntu)
+  const execPath = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+
   client = new Client({
     authStrategy: localAuth, // Usar autenticación local
     puppeteer: {
       headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
-      "--disable-blink-features=AutomationControlled",
-      "--disable-cache",
-      "--disable-application-cache",
-      "--disable-offline",
-      "--disk-cache-size=1",
-      "--single-process=false",
-      "--disable-background-timer-throttling",
-      "--disable-renderer-backgrounding",
-      "--disable-background-occluded-windows",
-      "--headless=new",
-      "--disable-extensions",
-      "--no-first-run",
-      "--remote-debugging-port=9222"
-    ],
-    timeout: 60000,
-  },
-  bypassCSP: true,
-});
+      // 2. Si execPath existe, se añade 'executablePath' a la configuración. Si es undefined (en Render), se ignora.
+      ...(execPath && { executablePath: execPath }),
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--disable-blink-features=AutomationControlled",
+        "--disable-cache",
+        "--disable-application-cache",
+        "--disable-offline",
+        "--disk-cache-size=1",
+        "--single-process=false",
+        "--disable-background-timer-throttling",
+        "--disable-renderer-backgrounding",
+        "--disable-background-occluded-windows",
+        "--headless=new",
+        "--disable-extensions",
+        "--no-first-run",
+        "--remote-debugging-port=9222"
+      ],
+      timeout: 60000,
+    },
+    bypassCSP: true,
+  });
 
   // ---------------------- EVENTOS ----------------------
 
