@@ -7,10 +7,11 @@ const filePath = path.resolve(
 
 try {
   // Siempre aplicar los fixes (no cached)
-  if (!fs.existsSync(filePath)) {
-    console.log("⚠ No se encontró Store.js");
-    process.exit(0);
-  }
+ if (!fs.existsSync(filePath)) {
+  console.log("⚠ No se encontró Store.js para aplicar los parches, continuando de todas formas...");
+  // process.exit(0); <-- ELIMINA O COMENTA ESTA LÍNEA
+  return; // Detiene la ejecución de ESTE script fix, pero deja vivo al backend principal
+}
 
   let content = fs.readFileSync(filePath, "utf8");
   const originalContent = content;

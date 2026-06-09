@@ -24,28 +24,29 @@ function initializeClient() {
     authStrategy: localAuth, // Usar autenticación local
     puppeteer: {
       headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-blink-features=AutomationControlled",
-        "--disable-cache",
-        "--disable-application-cache",
-        "--disable-offline",
-        "--disk-cache-size=1",
-        "--single-process=false",
-        "--disable-background-timer-throttling",
-        "--disable-renderer-backgrounding",
-        "--disable-backgrounding-occluded-windows",
-        "--headless=new",
-        "--disable-extensions",
-        "--no-first-run",
-      ],
-      timeout: 60000,
-    },
-    bypassCSP: true,
-  });
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--disable-blink-features=AutomationControlled",
+      "--disable-cache",
+      "--disable-application-cache",
+      "--disable-offline",
+      "--disk-cache-size=1",
+      "--single-process=false",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-background-occluded-windows",
+      "--headless=new",
+      "--disable-extensions",
+      "--no-first-run",
+      "--remote-debugging-port=9222"
+    ],
+    timeout: 60000,
+  },
+  bypassCSP: true,
+});
 
   // ---------------------- EVENTOS ----------------------
 
