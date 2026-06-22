@@ -69,7 +69,7 @@ export const enviarPregunta = async (req, res) => {
     try {
       console.log(`Llamando a Python: ${PYTHON_BACKEND_URL}/api/chat`);
       
-      // 🔑 OBTENER TOKEN DEL REQUEST ACTUAL
+      //  OBTENER TOKEN DEL REQUEST ACTUAL
       const authHeader = req.headers.authorization;
       console.log(`[DEBUG] Authorization header recibido: ${authHeader ? 'SÍ' : 'NO'}`);
       
@@ -222,7 +222,7 @@ export const calificarRespuesta = async (req, res) => {
 
     console.log(` Calificando respuesta ${id_respuesta_python} con ${calificacion} estrellas`);
 
-    // 🔍 OBTENER ÚLTIMA PREGUNTA Y RESPUESTA DE LA CONVERSACIÓN
+    //  OBTENER ÚLTIMA PREGUNTA Y RESPUESTA DE LA CONVERSACIÓN
     let ultima_pregunta = null;
     let ultima_respuesta = null;
     
@@ -236,7 +236,7 @@ export const calificarRespuesta = async (req, res) => {
       }
     }
 
-    // 🔑 OBTENER TOKEN DEL REQUEST ACTUAL
+    //  OBTENER TOKEN DEL REQUEST ACTUAL
     const authHeader = req.headers.authorization;
     console.log(`[DEBUG] Authorization header recibido: ${authHeader ? 'SÍ' : 'NO'}`);
     

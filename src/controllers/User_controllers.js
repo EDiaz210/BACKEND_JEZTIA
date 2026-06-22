@@ -10,18 +10,39 @@ import mongoose from "mongoose";
 // Registro de usuario estudiante
 const registro = async (req, res) => {
   try {
-    const { email, password, username, rol, numero } = req.body;
+    const {nombre, apellido, email, password, username, rol, numero, carrera } = req.body;
     if (Object.values(req.body).includes(""))
       return res.status(400).json({ msg: "Debes llenar todos los campos" });
 
+    const soloLetrasRegEx = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
+    const nombreLimpio = nombre ? nombre.trim() : "";
+    const apellidoLimpio = apellido ? apellido.trim() : "";
+    const emailLimpio = email ? email.trim() : "";
+    const usernameLimpio = username ? username.trim() : "";
+    const numeroLimpio = numero ? numero.trim() : "";
+    const passwordLimpio = password ? password.trim() : "";
+
+    // Validar que el nombre y el apellido
+    if ((nombreLimpio && nombreLimpio.length > 50) || (apellidoLimpio && apellidoLimpio.length > 50)) {
+      return res.status(400).json({ msg: "El nombre y el apellido no pueden tener más de 50 caracteres" });
+    }
+    if ((nombreLimpio && !soloLetrasRegEx.test(nombreLimpio)) || (apellidoLimpio && !soloLetrasRegEx.test(apellidoLimpio))) {
+      return res.status(400).json({ msg: "El nombre y el apellido solo pueden contener letras y espacios" });
+    }
+
+    // Validar que el nombre de usuario
+    if (usernameLimpio && usernameLimpio.length > 50) {
+      return res.status(400).json({ msg: "El nombre de usuario no puede tener más de 50 caracteres" });
+    }
+
     // Validar que el email pertenezca al dominio @epn.edu.ec
-    const emailLower = (email || '').toString().toLowerCase();
+    const emailLower = (emailLimpio || '').toString().toLowerCase();
     if (!emailLower.endsWith("@epn.edu.ec")) {
       return res.status(400).json({ msg: "El correo debe pertenecer al dominio @epn.edu.ec" });
     }
 
     // Validar que la contraseña tenga al menos 14 caracteres
-    if (password && password.length < 14) {
+    if (passwordLimpio && passwordLimpio.length < 14) {
       return res.status(400).json({ msg: "La contraseña debe tener al menos 14 caracteres" });
     }
 
@@ -32,22 +53,32 @@ const registro = async (req, res) => {
     }
 
     // Validar username único
-    if (username) {
-      const verificarUsername = await User.findOne({ username });
+    if (usernameLimpio) {
+      const verificarUsername = await User.findOne({ username: usernameLimpio });
       if (verificarUsername) {
         return res.status(400).json({ msg: "El nombre de usuario ya está en uso" });
       }
     }
 
     // Validar que el número sea de Ecuador
-    if (numero && !esNumeroEcuador(numero)) {
+    if (numeroLimpio && !esNumeroEcuador(numeroLimpio)) {
       return res.status(400).json({ msg: "El número debe ser de Ecuador" });
     }
     // Validar número único
-    if (numero) {
-      const existeNumero = await User.findOne({ numero });
+    if (numeroLimpio) {
+      const existeNumero = await User.findOne({ numero: numeroLimpio });
       if (existeNumero) return res.status(400).json({ msg: "El número ya está registrado" });
     }
+
+    if (!carrera) {
+      return res.status(400).json({ msg: "Debes seleccionar una carrera" });
+    }
+
+    const carrerasValidas = ["TSDS", "TSEM", "TSASA", "TSPIM", "TSPA", "TSRT"];
+    if (!carrerasValidas.includes(carrera)) {
+      return res.status(400).json({ msg: "La carrera seleccionada no es válida" });
+    }
+
 
     const nuevoUsuario = new User(req.body);
     if (req.files?.imagen) {
@@ -56,9 +87,9 @@ const registro = async (req, res) => {
       nuevoUsuario.avatarUsuarioID = public_id;
       await fs.unlink(req.files.imagen.tempFilePath);
     }
-    nuevoUsuario.password = await nuevoUsuario.encryptPassword(password);
+    nuevoUsuario.password = await nuevoUsuario.encryptPassword(passwordLimpio);
     const token = nuevoUsuario.crearToken();
-    await sendMailToRegister(email, token);
+    await sendMailToRegister(emailLimpio, token);
     await nuevoUsuario.save();
     return res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
   } catch (err) {
@@ -87,22 +118,24 @@ const confirmarEmail = async (req, res) => {
 // Login
 const login = async (req, res) => {
   const { email, password } = req.body;
+  const emailLimpio = email ? email.trim() : "";
+  const passwordLimpio = password ? password.trim() : "";
   if (Object.values(req.body).includes(""))
     return res.status(400).json({ msg: "Debes llenar todos los campos" });
   
   // Validar que el email pertenezca al dominio @epn.edu.ec
-  const emailLower = (email || '').toString().toLowerCase();
+  const emailLower = (emailLimpio || '').toString().toLowerCase();
   if (!emailLower.endsWith("@epn.edu.ec")) {
     return res.status(400).json({ msg: "El correo debe pertenecer al dominio @epn.edu.ec" });
   }
 
   // Validar que la contraseña tenga al menos 14 caracteres
-  if (password && password.length < 14) {
+  if (passwordLimpio && passwordLimpio.length < 14) {
     return res.status(400).json({ msg: "La contraseña debe tener al menos 14 caracteres" });
   }
-  const userBDD = await User.findOne({ email }).select("-status -__v -token -updatedAt -createdAt");
+  const userBDD = await User.findOne({ email: emailLower }).select("-status -__v -token -updatedAt -createdAt");
   if (!userBDD) return res.status(404).json({ msg: "Usuario no existe" });
-  const verificarPassword = await userBDD.matchPassword(password);
+  const verificarPassword = await userBDD.matchPassword(passwordLimpio);
   if (!verificarPassword) return res.status(401).json({ msg: "Contraseña incorrecta" });
   const { nombre, apellido, username, _id, rol } = userBDD;
   const token = crearTokenJWT(userBDD._id, userBDD.rol);
@@ -118,10 +151,14 @@ const perfil = (req, res) => {
 // Recuperar password
 const recuperarPassword = async (req, res) => {
   const { email } = req.body;
+
+  const emailLimpio = email ? email.trim() : "";
+
   if (!email || email.trim() === "") {
     return res.status(400).json({ msg: "Debes llenar todos los campos" });
   }
-  const userBDD = await User.findOne({ email: new RegExp(`^${email.trim()}$`, "i") });
+
+  const userBDD = await User.findOne({ email: new RegExp(`^${emailLimpio}$`, "i") });
   if (!userBDD) {
     return res.status(404).json({ msg: "Usuario no registrado" });
   }
@@ -146,14 +183,18 @@ const comprobarTokenPassword = async (req, res) => {
 // Crear nueva password
 const crearNuevaPassword = async (req, res) => {
   const { password, confirmpassword } = req.body;
+
+  const passwordLimpio = password ? password.trim() : "";
+  const confirmpasswordLimpio = confirmpassword ? confirmpassword.trim() : "";
+
   if (Object.values(req.body).includes("")) {
     return res.status(404).json({ msg: "Debes llenar todos los campos" });
   }
   // Validar que la contraseña tenga al menos 14 caracteres
-  if (password && password.length < 14) {
+  if (passwordLimpio && passwordLimpio.length < 14) {
     return res.status(400).json({ msg: "La contraseña debe tener al menos 14 caracteres" });
   }
-  if (password !== confirmpassword) {
+  if (passwordLimpio !== confirmpasswordLimpio) {
     return res.status(404).json({ msg: "Los passwords no coinciden" });
   }
   const userBDD = await User.findOne({ token: req.params.token });
@@ -161,7 +202,7 @@ const crearNuevaPassword = async (req, res) => {
     return res.status(404).json({ msg: "Error de validación" });
   }
   userBDD.token = null;
-  userBDD.password = await userBDD.encryptPassword(password);
+  userBDD.password = await userBDD.encryptPassword(passwordLimpio);
   await userBDD.save();
   res.status(200).json({ msg: "Contraseña actualizada con éxito" });
 };
@@ -219,16 +260,18 @@ const updatePassword = async (req, res) => {
     const usuario = await User.findById(id);
     if (!usuario) return res.status(404).json({ msg: 'Lo sentimos, no existe el usuario' });
     const { presentpassword, newpassword } = req.body;
+    const presentpasswordLimpio = presentpassword ? presentpassword.trim() : "";
+    const newpasswordLimpio = newpassword ? newpassword.trim() : "";
     if (Object.values(req.body).includes("")) {
       return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
     }
     // Validar que la nueva contraseña tenga al menos 14 caracteres
-    if (newpassword && newpassword.length < 14) {
+    if (newpasswordLimpio && newpasswordLimpio.length < 14) {
       return res.status(400).json({ msg: "La contraseña debe tener al menos 14 caracteres" });
     }
-    const verificarPassword = await usuario.matchPassword(presentpassword);
+    const verificarPassword = await usuario.matchPassword(presentpasswordLimpio);
     if (!verificarPassword) return res.status(404).json({ msg: "Lo sentimos, la contraseña actual no es correcta" });
-    usuario.password = await usuario.encryptPassword(newpassword);
+    usuario.password = await usuario.encryptPassword(newpasswordLimpio);
     await usuario.save();
     res.status(200).json({ msg: "Contraseña actualizada correctamente" });
   } catch (error) {
@@ -236,17 +279,6 @@ const updatePassword = async (req, res) => {
   }
 };
 
-// Eliminar cuenta 
-const deletePerfil = async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (req.userBDD._id.toString() !== id) return res.status(403).json({ msg: 'No autorizado' });
-    await User.findByIdAndDelete(id);
-    res.status(200).json({ msg: 'Cuenta eliminada correctamente' });
-  } catch (error) {
-    res.status(500).json({ msg: 'Error al eliminar cuenta', error });
-  }
-};
 
 // Actualizar imagen
 const updateAvatar = async (req, res) => {
@@ -294,7 +326,6 @@ const updateAvatar = async (req, res) => {
 };
 
 //FUNCIONES DEL ADMINISTRADOR
-
 // Cambiar rol de estudiante a pasante
 const cambiarRolPasante = async (req, res) => {
   try {
@@ -426,7 +457,6 @@ export {
     crearNuevaPassword,
     updatePerfil,
     updatePassword,
-    deletePerfil,
     updateAvatar,
 
     

@@ -6,7 +6,6 @@ import {
     perfil,
     updatePerfil,
     updatePassword,
-    deletePerfil,
     updateAvatar,
     recuperarPassword,
     comprobarTokenPassword,
@@ -40,7 +39,6 @@ router.post("/nuevopassword/:token", crearNuevaPassword);
 router.get("/perfil",verificarTokenJWT, perfil);
 router.put("/perfil/:id", verificarTokenJWT, updatePerfil);
 router.put("/perfil/actualizarpassword/:id", verificarTokenJWT, updatePassword);
-router.delete("/perfil/eliminar/:id", verificarTokenJWT, deletePerfil);
 router.put("/perfil/imagen/:id", verificarTokenJWT, upload.single('imagen'), updateAvatar);
 
 //FUNCIONES DEL ADMINISTRADOR

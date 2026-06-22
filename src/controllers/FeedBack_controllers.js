@@ -15,6 +15,14 @@ const createFeedback = async (req, res) => {
       studentId: req.userBDD._id,
       studentName: req.userBDD.nombre
     };
+
+    if (!feedbackData.description || feedbackData.description.trim().length > 100) {
+      return res.status(400).json({
+        status: 'error',
+        message: `La descripción no puede superar los 100 caracteres. Enviazte: ${feedbackData.description ? feedbackData.description.length : 0}`
+      });
+    }
+    
     const feedback = await Feedback.create(feedbackData);
     res.status(200).json({ msg: 'Feedback creado exitosamente' });
   } catch (error) {
