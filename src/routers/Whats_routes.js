@@ -8,16 +8,16 @@ import { enviarMensaje, getQR, getStatus, logout, listaMensajes, deleteMessage, 
 const router = Router();
 
 // Obtener QR para escanear
-router.get("/qr", verificarTokenJWT, getQR);
+router.get("/qr", verificarTokenJWT, obtenerQR);
 
 // Estado del cliente
-router.get("/status", verificarTokenJWT, getStatus);
+router.get("/status", verificarTokenJWT, obtenerStatus);
 
 // Enviar mensajes con archivos opcionales
 router.post("/enviar-mensaje", verificarTokenJWT, upload.array("files"), enviarMensaje);
 
 router.get("/listarmensajes", verificarTokenJWT, listaMensajes);
-router.delete("/mensajes/:id", verificarTokenJWT, deleteMessage);
+router.delete("/mensajes/:id", verificarTokenJWT, eliminarMensaje);
 
 
 // Logout
