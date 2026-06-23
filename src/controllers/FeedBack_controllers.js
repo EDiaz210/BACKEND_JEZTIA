@@ -1,4 +1,4 @@
-import Feedback from '../models/FeedBack.js'; // Eliminada la importación de express
+import Feedback from '../models/FeedBack.js';
 
 // Crear nuevo feedback (Solo Estudiante)
 const createFeedback = async (req, res) => {
