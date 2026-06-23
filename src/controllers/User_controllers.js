@@ -233,44 +233,36 @@ const updatePerfil = async (req, res) => {
     const usuario = await User.findById(id);
     if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
 
-    const { nombre, apellido, email, username, numero, carrera } = req.body;
+    const { nombre, apellido, email, username } = req.body;
 
-    // Saneamiento y Validaciones estrictas en actualización
-    if (nombre) {
-      const nomLimpio = nombre.trim();
-      if(nomLimpio.length > 50 || !soloLetrasRegEx.test(nomLimpio)) return res.status(400).json({ msg: "Nombre no válido"});
-      usuario.nombre = nomLimpio;
+    const nomLimpio = nombre.trim();
+    const apeLimpio = apellido.trim();
+    
+    if (nomLimpio.length > 50 || apeLimpio.length > 50) {
+      return res.status(400).json({ msg: "El nombre y el apellido no pueden tener más de 50 caracteres" });
     }
-    if (apellido) {
-      const apeLimpio = apellido.trim();
-      if(apeLimpio.length > 50 || !soloLetrasRegEx.test(apeLimpio)) return res.status(400).json({ msg: "Apellido no válido"});
-      usuario.apellido = apeLimpio;
+    if (!soloLetrasRegEx.test(nomLimpio) || !soloLetrasRegEx.test(apeLimpio)) {
+      return res.status(400).json({ msg: "El nombre y el apellido solo pueden contener letras y espacios" });
     }
+
     if (email) {
       const emailLower = email.toString().toLowerCase().trim();
-      if (!emailLower.endsWith("@epn.edu.ec")) return res.status(400).json({ msg: "Debe ser de la EPN" });
+      if (!emailLower.endsWith("@epn.edu.ec")) return res.status(400).json({ msg: "Debe ser con el dominio @epn.edu.ec" });
       const existeEmail = await User.findOne({ email: new RegExp(`^${emailLower}$`, 'i'), _id: { $ne: id } });
       if (existeEmail) return res.status(400).json({ msg: "El email ya se encuentra registrado" });
       usuario.email = emailLower;
     }
     if (username) {
       const userLimpio = username.trim();
+      if (userLimpio.length > 50) {
+      return res.status(400).json({ msg: "El nombre de usuario no puede tener más de 50 caracteres" });
+      }
       const existeUsername = await User.findOne({ username: userLimpio, _id: { $ne: id } });
       if (existeUsername) return res.status(400).json({ msg: "El nombre de usuario ya está en uso" });
       usuario.username = userLimpio;
     }
-    if (numero) {
-      const numLimpio = numero.trim();
-      if (!esNumeroEcuador(numLimpio)) return res.status(400).json({ msg: "El número debe ser de Ecuador" });
-      const existeNumero = await User.findOne({ numero: numLimpio, _id: { $ne: id } });
-      if (existeNumero) return res.status(400).json({ msg: "El número ya está registrado" });
-      usuario.numero = numLimpio;
-    }
-    if (carrera) {
-      const carrerasValidas = ["TSDS", "TSEM", "TSASA", "TSPIM", "TSPA", "TSRT"];
-      if (!carrerasValidas.includes(carrera)) return res.status(400).json({ msg: "Carrera inválida" });
-      usuario.carrera = carrera;
-    }
+
+    
 
     await usuario.save();
     res.status(200).json({ msg: "Perfil actualizado correctamente" });
