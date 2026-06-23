@@ -3,7 +3,7 @@ import { verificarTokenJWT } from '../middlewares/JWT.js'
 import { Router } from "express";
 import upload from "../middlewares/Upload.js";
 
-import { sendMessage, getQR, getStatus, logout, listaMensajes, deleteMessage, sendMessageN8N } from "../controllers/Whatsapp_controller.js";
+import { enviarMensaje, getQR, getStatus, logout, listaMensajes, deleteMessage,  } from "../controllers/Whatsapp_controller.js";
 
 const router = Router();
 
@@ -14,11 +14,11 @@ router.get("/qr", verificarTokenJWT, getQR);
 router.get("/status", verificarTokenJWT, getStatus);
 
 // Enviar mensajes con archivos opcionales
-router.post("/send-message", verificarTokenJWT, upload.array("files"), sendMessage);
+router.post("/enviar-mensaje", verificarTokenJWT, upload.array("files"), enviarMensaje);
 
 router.get("/listarmensajes", verificarTokenJWT, listaMensajes);
 router.delete("/mensajes/:id", verificarTokenJWT, deleteMessage);
-router.post("/send-message-n8n", sendMessageN8N);
+
 
 // Logout
 router.get("/logout", verificarTokenJWT, logout);

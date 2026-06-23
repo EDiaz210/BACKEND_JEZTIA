@@ -1,13 +1,11 @@
 // controller_conversaciones.js
-import dotenv from "dotenv";
 import Conversacion from "../models/Conversaciones.js";
 
-dotenv.config();
 
 // URL de tu backend Python
 const PYTHON_BACKEND_URL = process.env.PYTHON_SERVICE_URL;
 
-export const crearConversacion = async (req, res) => {
+const crearConversacion = async (req, res) => {
   try {
     const usuario = req.userBDD;
     const tipoUsuario = req.userBDD?.rol;
@@ -32,14 +30,25 @@ export const crearConversacion = async (req, res) => {
   }
 };
 
-export const enviarPregunta = async (req, res) => {
+const enviarPregunta = async (req, res) => {
   try {
     const { id } = req.params;
     const { question } = req.body;
 
-    if (!question?.trim()) {
+    // --- NUEVA VALIDACIÓN COMPLETA DE VACÍO Y LONGITUD ---
+    if (!question || !question.trim()) {
       return res.status(400).json({ error: "La pregunta no puede estar vacía" });
     }
+
+    const minLongitud = 3;
+    const maxLongitud = 2000; // Puedes ajustar este valor según tus necesidades
+    
+    if (question.length < minLongitud || question.length > maxLongitud) {
+      return res.status(400).json({ 
+        error: `La pregunta debe tener entre ${minLongitud} y ${maxLongitud} caracteres.` 
+      });
+    }
+    // -----------------------------------------------------
 
     const usuario = req.userBDD;
     const tipoUsuario = req.userBDD?.rol;
@@ -203,7 +212,7 @@ export const enviarPregunta = async (req, res) => {
   }
 };
 
-export const calificarRespuesta = async (req, res) => {
+const calificarRespuesta = async (req, res) => {
   try {
     const { id_respuesta_python, calificacion, conversacion_id } = req.body;
 
@@ -267,7 +276,6 @@ export const calificarRespuesta = async (req, res) => {
         calificacion: parseInt(calificacion),
         usuario_id: usuario._id.toString(),
         rol: tipoUsuario,
-        //  ENVIAR PREGUNTA Y RESPUESTA PARA PROCESAMIENTO AUTOMÁTICO
         pregunta_usuario: ultima_pregunta,
         respuesta_dada: ultima_respuesta
       })
@@ -280,9 +288,7 @@ export const calificarRespuesta = async (req, res) => {
     const resultado = await response.json();
 
     if (resultado.success) {
-      //  VERIFICAR SI SE ENVIÓ AUTOMÁTICAMENTE AL MÓDULO DE CORRECCIÓN
       let mensaje_respuesta = 'Calificación registrada exitosamente';
-      console.log();
       
       if (resultado.enviado_a_correccion) {
         mensaje_respuesta = 'Calificación registrada. La pregunta fue enviada al módulo de corrección automáticamente.';
@@ -309,9 +315,7 @@ export const calificarRespuesta = async (req, res) => {
   }
 };
 
-//  ELIMINADA COMPLETAMENTE LA FUNCIÓN reportarProblema
-
-export const historialUsuario = async (req, res) => {
+const historialUsuario = async (req, res) => {
   try {
     const usuario = req.userBDD;
     if (!usuario) return res.status(401).json({ error: "Usuario no autenticado" });
@@ -339,8 +343,7 @@ export const historialUsuario = async (req, res) => {
     res.status(500).json({ error: "Error al obtener historial" });
   }
 };
-
-export const eliminarConversacion = async (req, res) => {
+  const eliminarConversacion = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -363,6 +366,12 @@ export const eliminarConversacion = async (req, res) => {
     console.error("Error al eliminar conversación:", error);
     res.status(500).json({ error: "Error al eliminar conversación" });
   }
-
 };
 
+export {
+  crearConversacion,
+  enviarPregunta,
+  historialUsuario,
+  eliminarConversacion,
+  calificarRespuesta
+};
