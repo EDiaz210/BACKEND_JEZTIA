@@ -35,20 +35,26 @@ const enviarPregunta = async (req, res) => {
     const { id } = req.params;
     const { question } = req.body;
 
-    // --- NUEVA VALIDACIÓN COMPLETA DE VACÍO Y LONGITUD ---
     if (!question || !question.trim()) {
       return res.status(400).json({ error: "La pregunta no puede estar vacía" });
     }
 
     const minLongitud = 3;
-    const maxLongitud = 2000; // Puedes ajustar este valor según tus necesidades
-    
+    const maxLongitud = 2000;
+
     if (question.length < minLongitud || question.length > maxLongitud) {
       return res.status(400).json({ 
         error: `La pregunta debe tener entre ${minLongitud} y ${maxLongitud} caracteres.` 
       });
     }
-    // -----------------------------------------------------
+
+    const preguntaLimpia = question.trim();
+
+    if (!preguntaLimpia.startsWith("¿")) {
+      return res.status(400).json({ 
+        error: "El texto ingresado debe comenzar con el signo de interrogación de apertura '¿'." 
+      });
+    }
 
     const usuario = req.userBDD;
     const tipoUsuario = req.userBDD?.rol;
