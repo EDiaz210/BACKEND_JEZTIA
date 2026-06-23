@@ -19,6 +19,13 @@ const createFeedback = async (req, res) => {
       });
     }
 
+    if (/\d/.test(description)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'La descripción no puede contener números.'
+      });
+    }
+
     if (description.trim().length > 100) {
       return res.status(400).json({
         status: 'error',
@@ -129,6 +136,13 @@ const respondToFeedback = async (req, res) => {
       return res.status(400).json({
         status: 'error',
         message: 'La respuesta es obligatoria y no puede estar vacía.'
+      });
+    }
+
+    if (/\d/.test(responseTextLimpia)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'La respuesta no puede contener números.'
       });
     }
 
