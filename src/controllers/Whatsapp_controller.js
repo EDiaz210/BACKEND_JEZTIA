@@ -32,7 +32,7 @@ const waitClientReady = async () => {
  * @param {string} message - Texto del mensaje
  * @param {Array} mediaInstances - Array de instancias MessageMedia pre-construidas para ahorrar RAM
  */
-const sendMessageSafe = async (number, message, mediaInstances = []) => {
+const enviarMensajeSeguro = async (number, message, mediaInstances = []) => {
   try {
     await waitClientReady();
 
@@ -131,7 +131,7 @@ const enviarMensaje = async (req, res) => {
     const results = [];
     for (const n of numbers) {
       // Pasamos las instancias fijas mapeadas
-      const result = await sendMessageSafe(n, message, mediaInstances);
+      const result = await enviarMensajeSeguro(n, message, mediaInstances);
       results.push(result);
       await new Promise(r => setTimeout(r, 500)); // Evitar saturar WhatsApp
     }
