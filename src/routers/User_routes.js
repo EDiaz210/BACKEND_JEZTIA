@@ -16,7 +16,8 @@ import {
     detallePasante,
     baneoEstudiante,
     listarEstudiantes,
-    detalleEstudiante
+    detalleEstudiante,
+    eliminarPerfil
 
 } from "../controllers/User_controllers.js";
 import { verificarTokenJWT } from '../middlewares/JWT.js'
@@ -34,6 +35,7 @@ router.get("/confirmar/:token", confirmarEmail);
 router.post("/recuperarpassword", recuperarPassword);
 router.get("/recuperarpassword/:token", comprobarTokenPassword);
 router.post("/nuevopassword/:token", crearNuevaPassword);
+router.delete("/perfil/eliminar/:id", verificarTokenJWT, eliminarPerfil);
 
 // Perfil
 router.get("/perfil",verificarTokenJWT, perfil);
