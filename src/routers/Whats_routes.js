@@ -3,7 +3,7 @@ import { verificarTokenJWT } from '../middlewares/JWT.js'
 import { Router } from "express";
 import upload from "../middlewares/Upload.js";
 
-import { enviarMensaje, getQR, getStatus, logout, listaMensajes, deleteMessage,  } from "../controllers/Whatsapp_controller.js";
+import { enviarMensaje,obtenerQR, obtenerStatus, logout, listaMensajes, eliminarMensaje,  } from "../controllers/Whatsapp_controller.js";
 
 const router = Router();
 

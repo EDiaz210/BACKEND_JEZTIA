@@ -167,8 +167,8 @@ const obtenerQR = async (req, res) => {
 
     if (getIsReady()) return res.json({ ready: true, qr: null });
     
-    // Removido await si el método es síncrono en memoria
-    const qr = getLastQR();
+    
+    const qr = await getLastQR();
     res.json({ ready: false, qr });
   } catch (err) {
     console.error("Error en getQR:", err);
