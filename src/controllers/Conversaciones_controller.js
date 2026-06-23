@@ -39,7 +39,7 @@ const enviarPregunta = async (req, res) => {
       return res.status(400).json({ error: "La pregunta no puede estar vacía" });
     }
 
-    const minLongitud = 3;
+    const minLongitud = 5;
     const maxLongitud = 2000;
 
     if (question.length < minLongitud || question.length > maxLongitud) {
@@ -53,6 +53,12 @@ const enviarPregunta = async (req, res) => {
     if (!preguntaLimpia.startsWith("¿")) {
       return res.status(400).json({ 
         error: "El texto ingresado debe comenzar con el signo de interrogación de apertura '¿'." 
+      });
+    }
+
+    if (/\d/.test(preguntaLimpia)) {
+      return res.status(400).json({
+        error: "La pregunta no puede contener números."
       });
     }
 
