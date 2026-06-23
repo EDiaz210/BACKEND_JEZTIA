@@ -157,7 +157,7 @@ const enviarMensaje = async (req, res) => {
 /**
  * GET /qr
  */
-const getQR = async (req, res) => {
+const obtenerQR = async (req, res) => {
   try {
     if (!req.userBDD || (req.userBDD.rol !== "administrador" && req.userBDD.rol !== "pasante")) {
       return res.status(403).json({ 
@@ -179,7 +179,7 @@ const getQR = async (req, res) => {
 /**
  * GET /status
  */
-const getStatus = async (req, res) => {
+const obtenerStatus = async (req, res) => {
   try {
     if (!req.userBDD || (req.userBDD.rol !== "administrador" && req.userBDD.rol !== "pasante")) {
       return res.status(403).json({ 
@@ -236,7 +236,7 @@ const listaMensajes = async (req, res) => {
 /**
  * DELETE /delete-message/:id
  */
-const deleteMessage = async (req, res) => {
+const eliminarMensaje = async (req, res) => {
   try {
     if (!req.userBDD || (req.userBDD.rol !== "administrador" && req.userBDD.rol !== "pasante")) {
       return res.status(403).json({ 
@@ -287,4 +287,4 @@ const logout = async (req, res) => {
   }
 };
 
-export { enviarMensaje, getQR, getStatus, logout, listaMensajes, deleteMessage };
+export { enviarMensaje, obtenerQR, obtenerStatus, logout, listaMensajes, eliminarMensaje };
