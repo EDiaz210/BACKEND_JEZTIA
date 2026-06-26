@@ -2,7 +2,7 @@
 import { client, getIsReady, getReadyAt, getLastQR } from "../config/client.js";
 import pkg from "whatsapp-web.js";
 const { MessageMedia } = pkg;
-import { normalizeNumber } from "../utils/normalize.js";
+import { normalizeNumber, esNumeroEcuador } from "../utils/normalize.js";
 import Mensaje from "../models/Mensaje.js";
 
 /**
@@ -36,21 +36,22 @@ const enviarMensajeSeguro = async (number, message, mediaInstances = []) => {
   try {
     await waitClientReady();
 
-    // CORRECCIÓN CRÍTICA: WhatsApp Web requiere el sufijo formateado @c.us
-    const whatsappId = `${number}@c.us`;
+    // CORRECCIÓN: Como tu controlador ya le pone el '@c.us', usamos 'number' directamente.
+    // Si por si acaso viniera sin él, este ternario lo protege.
+    const whatsappId = number.endsWith('@c.us') ? number : `${number}@c.us`;
 
     // Enviar texto - con retry y control de errores
     if (message) {
       try {
-        await client.sendMessage(whatsappId, message, { 
-          linkPreview: false,  // Evitar procesamientos extra
-          sendMediaAsDocument: false
-        });
-        console.log(`[WHATSAPP] Mensaje de texto enviado a ${number}`);
+        // Limpiamos las opciones para evitar el error de desestructuración ': t'
+        await client.sendMessage(whatsappId, message);
+        console.log(`[WHATSAPP] Mensaje de texto enviado a ${whatsappId}`);
       } catch (textErr) {
-        const errorMsg = textErr.message || '';
+        // Si el error es una sola letra 't' o un string vacío, extraemos el mensaje real
+        const errorMsg = typeof textErr === 'object' ? (textErr.message || '') : String(textErr);
+        
         if (!errorMsg.includes('markedUnread')) {
-          console.warn(`[WHATSAPP] Error enviando texto a ${number}:`, errorMsg);
+          console.warn(`[WHATSAPP] Error enviando texto a ${whatsappId}:`, errorMsg);
         } else {
           console.log(`[WHATSAPP] markedUnread error (ignorado) - mensaje enviado igualmente`);
         }
@@ -61,17 +62,17 @@ const enviarMensajeSeguro = async (number, message, mediaInstances = []) => {
     for (const m of mediaInstances) {
       try {
         await client.sendMessage(whatsappId, m);
-        console.log(`[WHATSAPP] Archivo enviado a ${number}`);
+        console.log(`[WHATSAPP] Archivo enviado a ${whatsappId}`);
       } catch (mediaErr) {
-        const errorMsg = mediaErr.message || '';
+        const errorMsg = typeof mediaErr === 'object' ? (mediaErr.message || '') : String(mediaErr);
         if (!errorMsg.includes('markedUnread')) {
-          console.warn(`[WHATSAPP] Error enviando archivo a ${number}:`, errorMsg);
+          console.warn(`[WHATSAPP] Error enviando archivo a ${whatsappId}:`, errorMsg);
         }
       }
     }
 
-    console.log(`[WHATSAPP] Completado envío a ${number}`);
-    return { to: number, sent: true };
+    console.log(`[WHATSAPP] Completado envío a ${whatsappId}`);
+    return { to: whatsappId, sent: true };
   } catch (err) {
     console.error(`[WHATSAPP] Error general enviando a ${number}:`, err.message);
     if (err.message && err.message.includes("Execution context was destroyed")) {
@@ -82,6 +83,9 @@ const enviarMensajeSeguro = async (number, message, mediaInstances = []) => {
   }
 };
 
+/**
+ * Controlador POST /enviar-mensaje
+ */
 /**
  * Controlador POST /enviar-mensaje
  */
@@ -106,9 +110,16 @@ const enviarMensaje = async (req, res) => {
 
     let numbers = req.body.numbers || req.body["numbers[]"] || [];
     if (!Array.isArray(numbers)) numbers = [numbers];
-    numbers = numbers.map(normalizeNumber).filter(Boolean);
 
-    if (!numbers.length && !req.files?.length) return res.status(400).json({ error: "No hay números válidos o archivos" });
+    // USAMOS TUS FUNCIONES: Filtramos que sean de Ecuador y luego los normalizamos a @c.us
+    numbers = numbers
+      .filter(num => esNumeroEcuador(num)) 
+      .map(num => normalizeNumber(num))
+      .filter(Boolean); // Limpia nulos si existieran
+
+    if (!numbers.length && !req.files?.length) {
+      return res.status(400).json({ error: "No hay números válidos de Ecuador o archivos para enviar." });
+    }
 
     const message = req.body.message ? req.body.message.trim() : "";
 
@@ -122,35 +133,36 @@ const enviarMensaje = async (req, res) => {
       });
     }
 
-    // OPTIMIZACIÓN DE MEMORIA: Mapear los archivos a Base64 una sola vez fuera del bucle
-    const mediaInstances = (req.files || []).map(f => {
+    // 1. OPTIMIZACIÓN DE MEMORIA: Guardamos los datos puros en Base64 una sola vez
+    const archivosBase64 = (req.files || []).map(f => {
       const bufferSource = f.buffer || fs.readFileSync(f.path);
-      return new MessageMedia(f.mimetype, bufferSource.toString("base64"), f.originalname);
+      return {
+        mimetype: f.mimetype,
+        base64Data: bufferSource.toString("base64"),
+        originalname: f.originalname
+      };
     });
 
     const results = [];
     for (const n of numbers) {
-      // Pasamos las instancias fijas mapeadas
+      // 2. Instancias frescas de MessageMedia para cada número
+      const mediaInstances = archivosBase64.map(f => 
+        new MessageMedia(f.mimetype, f.base64Data, f.originalname)
+      );
+
+      // Enviamos usando el número ya transformado (ej: 5939xxxxxxxx@c.us)
       const result = await enviarMensajeSeguro(n, message, mediaInstances);
       results.push(result);
-      await new Promise(r => setTimeout(r, 500)); // Evitar saturar WhatsApp
+      
+      // 3. Delay de 2 segundos para evitar baneos de WhatsApp
+      await new Promise(r => setTimeout(r, 2000)); 
     }
 
-    // Guardar en MongoDB histórico
-    const nuevoMensaje = new Mensaje({
-      numbers,
-      message,
-      hasMedia: !!req.files?.length,
-      files: req.files?.map(f => ({ fileName: f.originalname, fileMime: f.mimetype })),
-      tipo: tipo,
-      date: new Date(),
-    });
-    await nuevoMensaje.save();
+    return res.status(200).json({ msg: "Proceso de envío terminado", dealles: results });
 
-    res.json({ "Se ha enviado el mensaje a los números indicados": results });
-  } catch (err) {
-    console.error("Error sendMessage:", err);
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error(error); // Para que puedas ver en la consola si algo falla internamente
+    res.status(500).json({ msg: "Error al enviar mensajes" });
   }
 };
 
