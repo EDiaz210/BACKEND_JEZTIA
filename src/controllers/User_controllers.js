@@ -76,7 +76,7 @@ const registro = async (req, res) => {
       username: usernameLimpio,
       numero: numeroLimpio,
       carrera,
-      rol: req.body.rol || "estudiante"
+      rol: "estudiante"
     });
 
     if (req.files?.imagen) {
