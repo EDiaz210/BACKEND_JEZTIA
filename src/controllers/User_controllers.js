@@ -435,7 +435,6 @@ const registroPasante = async (req, res) => {
 
     nuevoUsuario.password = await nuevoUsuario.encryptPassword(passwordLimpio);
     
-    // ◄ CAMBIO: Se eliminaron las líneas de generar token y enviar el email de confirmación
     await nuevoUsuario.save();
 
     return res.status(201).json({ msg: "Pasante registrado exitosamente por el administrador" });
