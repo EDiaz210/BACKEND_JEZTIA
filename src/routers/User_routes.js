@@ -17,7 +17,8 @@ import {
     baneoEstudiante,
     listarEstudiantes,
     detalleEstudiante,
-    eliminarPerfil
+    eliminarPerfil,
+    registroPasante
 
 } from "../controllers/User_controllers.js";
 import { verificarTokenJWT } from '../middlewares/JWT.js'
@@ -45,6 +46,7 @@ router.put("/perfil/imagen/:id", verificarTokenJWT, upload.single('imagen'), upd
 
 //FUNCIONES DEL ADMINISTRADOR
 //Rol pasante
+router.post("/create-pasante",verificarTokenJWT, registroPasante)
 router.put("/cambiar-rol-pasante/:id", verificarTokenJWT, cambiarRolPasante)
 router.delete('/pasante/banear/:id',verificarTokenJWT,baneoPasante)
 router.get('/pasantes',verificarTokenJWT, listarPasantes)

@@ -351,6 +351,104 @@ const updateAvatar = async (req, res) => {
 };
 
 // FUNCIONES DEL ADMINISTRADOR
+// Registro de Pasante
+const registroPasante = async (req, res) => {
+  if (!req.userBDD || req.userBDD.rol !== "administrador") {
+      return res.status(403).json({ msg: "Acceso denegado" });
+    }
+
+  try {
+    const { nombre, apellido, email, password, username, numero, carrera } = req.body;
+
+    // Validación estricta campo por campo
+    if (!nombre || !apellido || !email || !password || !username || !numero || !carrera) {
+      return res.status(400).json({ msg: "Debes llenar todos los campos requeridos" });
+    }
+
+    const nombreLimpio = nombre.trim();
+    const apellidoLimpio = apellido.trim();
+    const emailLimpio = email.trim();
+    const usernameLimpio = username.trim();
+    const numeroLimpio = numero.trim();
+    const passwordLimpio = password.trim();
+
+    if (nombreLimpio.length > 50 || apellidoLimpio.length > 50) {
+      return res.status(400).json({ msg: "El nombre y el apellido no pueden tener más de 50 caracteres" });
+    }
+    if (!soloLetrasRegEx.test(nombreLimpio) || !soloLetrasRegEx.test(apellidoLimpio)) {
+      return res.status(400).json({ msg: "El nombre y el apellido solo pueden contener letras y espacios" });
+    }
+
+    if (usernameLimpio.length > 50) {
+      return res.status(400).json({ msg: "El nombre de usuario no puede tener más de 50 caracteres" });
+    }
+
+    const emailLower = emailLimpio.toLowerCase();
+    if (!emailLower.endsWith("@epn.edu.ec")) {
+      return res.status(400).json({ msg: "El correo debe pertenecer al dominio @epn.edu.ec" });
+    }
+
+    if (passwordLimpio.length < 14) {
+      return res.status(400).json({ msg: "La contraseña debe tener al menos 14 caracteres" });
+    }
+
+    const verificarEmailBDD = await User.findOne({ email: new RegExp(`^${emailLower}$`, 'i') });
+    if (verificarEmailBDD) {
+      return res.status(400).json({ msg: "El email ya se encuentra registrado" });
+    }
+
+    const verificarUsername = await User.findOne({ username: usernameLimpio });
+    if (verificarUsername) {
+      return res.status(400).json({ msg: "El nombre de usuario ya está en uso" });
+    }
+
+    if (!esNumeroEcuador(numeroLimpio)) {
+      return res.status(400).json({ msg: "El número debe ser de Ecuador" });
+    }
+
+    const existeNumero = await User.findOne({ numero: numeroLimpio });
+    if (existeNumero) return res.status(400).json({ msg: "El número ya está registrado" });
+
+    const carrerasValidas = ["TSDS", "TSEM", "TSASA", "TSPIM", "TSPA", "TSRT"];
+    if (!carrerasValidas.includes(carrera)) {
+      return res.status(400).json({ msg: "La carrera seleccionada no es válida" });
+    }
+
+    // Instancia limpia mapeada
+    const nuevoUsuario = new User({
+      nombre: nombreLimpio,
+      apellido: apellidoLimpio,
+      email: emailLower,
+      username: usernameLimpio,
+      numero: numeroLimpio,
+      carrera,
+      rol: "pasante"
+    });
+
+    if (req.files?.imagen) {
+      const { secure_url, public_id } = await cloudinary.uploader.upload(req.files.imagen.tempFilePath, { folder: 'Usuarios' });
+      nuevoUsuario.avatarUsuario = secure_url;
+      nuevoUsuario.avatarUsuarioID = public_id;
+      await fs.unlink(req.files.imagen.tempFilePath);
+    }
+
+    nuevoUsuario.password = await nuevoUsuario.encryptPassword(passwordLimpio);
+    const token = nuevoUsuario.crearToken();
+    await sendMailToRegister(emailLower, token);
+    await nuevoUsuario.save();
+
+    return res.status(201).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
+  } catch (err) {
+    const dupCode = err?.code || err?.errorResponse?.code;
+    if (dupCode === 11000) {
+      const key = err.keyValue ? Object.keys(err.keyValue)[0] : 'campo';
+      return res.status(400).json({ msg: `El ${key} ya está registrado` });
+    }
+    return res.status(500).json({ msg: 'Ocurrió un error en el servidor' });
+  }
+};
+
+
 const cambiarRolPasante = async (req, res) => {
   try {
     if (!req.userBDD || req.userBDD.rol !== "administrador") {
@@ -479,5 +577,6 @@ export {
   baneoEstudiante,
   listarEstudiantes,
   detalleEstudiante, 
-  eliminarPerfil
+  eliminarPerfil,
+  registroPasante
 };
