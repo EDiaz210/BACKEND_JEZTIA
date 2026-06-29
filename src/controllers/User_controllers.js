@@ -354,8 +354,8 @@ const updateAvatar = async (req, res) => {
 // Registro de Pasante
 const registroPasante = async (req, res) => {
   if (!req.userBDD || req.userBDD.rol !== "administrador") {
-      return res.status(403).json({ msg: "Acceso denegado" });
-    }
+    return res.status(403).json({ msg: "Acceso denegado" });
+  }
 
   try {
     const { nombre, apellido, email, password, username, numero, carrera } = req.body;
@@ -422,7 +422,8 @@ const registroPasante = async (req, res) => {
       username: usernameLimpio,
       numero: numeroLimpio,
       carrera,
-      rol: "pasante"
+      rol: "pasante",
+      confirmEmail: true // ◄ CAMBIO: La cuenta ya nace verificada porque la crea el admin
     });
 
     if (req.files?.imagen) {
@@ -433,11 +434,11 @@ const registroPasante = async (req, res) => {
     }
 
     nuevoUsuario.password = await nuevoUsuario.encryptPassword(passwordLimpio);
-    const token = nuevoUsuario.crearToken();
-    await sendMailToRegister(emailLower, token);
+    
+    // ◄ CAMBIO: Se eliminaron las líneas de generar token y enviar el email de confirmación
     await nuevoUsuario.save();
 
-    return res.status(201).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
+    return res.status(201).json({ msg: "Pasante registrado exitosamente por el administrador" });
   } catch (err) {
     const dupCode = err?.code || err?.errorResponse?.code;
     if (dupCode === 11000) {
@@ -447,7 +448,6 @@ const registroPasante = async (req, res) => {
     return res.status(500).json({ msg: 'Ocurrió un error en el servidor' });
   }
 };
-
 
 const cambiarRolPasante = async (req, res) => {
   try {
