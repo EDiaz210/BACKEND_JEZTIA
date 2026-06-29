@@ -409,7 +409,7 @@ const registroPasante = async (req, res) => {
     const existeNumero = await User.findOne({ numero: numeroLimpio });
     if (existeNumero) return res.status(400).json({ msg: "El número ya está registrado" });
 
-    const carrerasValidas = ["TSDS", "TSEM", "TSASA", "TSPIM", "TSPA", "TSRT"];
+    const carrerasValidas = ["TSDS"];
     if (!carrerasValidas.includes(carrera)) {
       return res.status(400).json({ msg: "La carrera seleccionada no es válida" });
     }
