@@ -423,7 +423,7 @@ const registroPasante = async (req, res) => {
       numero: numeroLimpio,
       carrera,
       rol: "pasante",
-      confirmEmail: true // ◄ CAMBIO: La cuenta ya nace verificada porque la crea el admin
+      confirmEmail: true 
     });
 
     if (req.files?.imagen) {
