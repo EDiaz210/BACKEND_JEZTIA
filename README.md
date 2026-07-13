@@ -140,7 +140,12 @@ cp .env.example .env
 # - MongoDB Atlas
 # - JWT_SECRET
 # - Variables del microservicio IA
-# - Variables de WhatsApp
+# - Variables de Cloudinary
+# - Variables de Sendgrid
+
+
+![Uploading image.png…]()
+
 ```
 
 Ejecutar en modo desarrollo:
