@@ -84,22 +84,8 @@ El backend está desplegado en **Render** y se integra con diversos servicios ex
 - **Cloudinary** para almacenamiento multimedia.
 - **WhatsApp API** para la mensajería.
 
-```
-Frontend
-     │
-     ▼
-Backend (Node.js + Express)
-     │
-     ├────────► MongoDB Atlas
-     │
-     ├────────► Microservicio IA (FastAPI)
-     │
-     ├────────► Cloudinary
-     │
-     ├────────► WhatsApp API
-     │
-     └────────► n8n Webhooks
-```
+<img width="585" height="417" alt="image" src="https://github.com/user-attachments/assets/6f0987e6-72fb-41dc-8d5c-9e3d0ecfc681" />
+
 
 ---
 
