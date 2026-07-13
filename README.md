@@ -26,10 +26,9 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 * **Arquitectura:** Integración con microservicio externo (Python / FastAPI) para tareas de IA.
 * **Base de Datos:** *[Inserta aquí tu base de datos, ej: MySQL / MongoDB]* para la persistencia de datos, usuarios y configuración de respuestas.
 
-#### Estructura del Backend
+#### Estructura del Proyecto
 
 ```bash
-BACKEND_...STER
 └── src
     ├── config
     ├── controllers
