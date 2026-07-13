@@ -1,5 +1,10 @@
 ### Sistema de Mensajería Automatizada ESFOT (Backend)
 
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+
 Este repositorio contiene el backend principal desarrollado para el Sistema Web de Mensajería Automatizada. Proporciona la API REST central, gestiona la lógica de negocio y la persistencia de datos de la ESFOT, actuando como el orquestador que comunica la interfaz con el microservicio de Inteligencia Artificial y las plataformas de mensajería.
 
 #### Características del Backend
