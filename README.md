@@ -53,13 +53,9 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 
 | Recurso | Enlace |
 |----------|---------|
-| Formulario F_AA_233 | [Acceder al formulario](#) |
-| Formulario F_AA_234 | [Acceder al formulario](#) |
-| Formulario F_AA_236 | [Acceder al formulario](#) |
-| Documento de tesis | [Ver documento](#) |
-| Certificado IA | [Ver documento](#) |
-| Turnitin | [Ver documento](#) |
-| Video demostrativo | [Ver video](#) |
+| Formulario F_AA_233 | [Acceder al formulario](https://epnecuador-my.sharepoint.com/:b:/g/personal/elkin_diaz_epn_edu_ec/IQBIGr9LydvuTK7QuV8vYOCSAfvRD7tHZwierMKwBjeAZTY?e=iBomIX) |
+| Documento de tesis | [Ver documento](https://epnecuador-my.sharepoint.com/:b:/g/personal/elkin_diaz_epn_edu_ec/IQCAANQVab5qT567M8kgIh6zAQMmE2K3LPaGu6c9mbUhL84?e=A6jroD) |
+| Video demostrativo | [Ver video](https://www.youtube.com/watch?v=tc5cQuuCerQ&feature=youtu.be) |
 
 > **Nota:** Reemplaza los enlaces (`#`) por las URLs correspondientes.
 
@@ -87,7 +83,6 @@ El backend está desplegado en **Render** y se integra con diversos servicios ex
 - **MongoDB Atlas** para la persistencia de datos.
 - **Cloudinary** para almacenamiento multimedia.
 - **WhatsApp API** para la mensajería.
-- **n8n** para automatización mediante Webhooks.
 
 ```
 Frontend
@@ -113,30 +108,27 @@ Backend (Node.js + Express)
 ## Administrador
 
 - Inicio de sesión.
-- Gestión de perfil.
-- Administración de usuarios.
-- Gestión de preguntas y respuestas (QnA).
-- Gestión de feedbacks.
-- Monitoreo del chatbot.
-- Visualización del dashboard de WhatsApp.
-- Administración de la base de conocimientos.
-
+- Rehabilitar Contraseña.
+- Gestión de perfil y contraseña.
+- Gestión de usuarios.
+- Gestión de Mensajes.
+- Gestión de Chatbot con IA.
 ## Pasante
 
 - Inicio de sesión.
-- Gestión de perfil.
-- Administración de preguntas frecuentes.
-- Gestión de respuestas del chatbot.
-- Registro de información académica.
+- Rehabilitar Contraseña.
+- Gestión de Perfil y Contraseña.
+- Gestión de Mensajes.
+- Gestión de Chatbot con IA.
 
 ## Estudiante
 
-- Acceso al chatbot.
-- Consulta de información académica.
-- Consulta de información extracurricular.
-- Envío de sugerencias.
-- Envío de quejas.
-- Interacción mediante WhatsApp.
+- Registro
+- Inicio de sesión.
+- Rehabilitar Contraseña.
+- Gestión de perfil y contraseña.
+- Gestión de Mensajes e historial.
+- Gestión de Chatbot con IA.
 
 ---
 
