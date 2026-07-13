@@ -69,7 +69,7 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 
 Puedes acceder a la plataforma desplegada mediante el siguiente enlace:
 
-👉 **https://grupo-moreno.onrender.com**
+👉 **https://backend-jeztia.onrender.com/**
 
 > Cambia este enlace si corresponde al despliegue del Sistema ESFOT.
 
@@ -146,7 +146,7 @@ Sigue estos pasos para ejecutar el proyecto localmente.
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/usuario/repositorio.git
+git clone https://github.com/EDiaz210/BACKEND_JEZTIA.git
 
 # 2. Entrar al proyecto
 cd backend
@@ -182,9 +182,9 @@ npm start
 
 ### Autora
 
-**Alessia de los Ángeles Pérez Palacios**
+**Elkin Javier Diaz Catucuamba**
 
-📧 alessia.perez@epn.edu.ec
+📧 elkin.diaz@epn.edu.ec
 
 ### Director de Tesis
 
