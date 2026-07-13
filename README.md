@@ -29,7 +29,6 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 ## Estructura del Proyecto
 
 ```bash
-BACKEND_...STER
 └── src
     ├── config
     ├── controllers
