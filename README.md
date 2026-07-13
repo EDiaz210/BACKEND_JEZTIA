@@ -46,3 +46,148 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 ├── fix.whatsapp.js
 ├── package-lock.json
 └── package.json
+
+# Recursos Importantes
+
+| Recurso | Enlace |
+|----------|---------|
+| Formulario F_AA_233 | [Acceder al formulario](#) |
+| Formulario F_AA_234 | [Acceder al formulario](#) |
+| Formulario F_AA_236 | [Acceder al formulario](#) |
+| Documento de tesis | [Ver documento](#) |
+| Certificado IA | [Ver documento](#) |
+| Turnitin | [Ver documento](#) |
+| Video demostrativo | [Ver video](#) |
+
+> **Nota:** Reemplaza los enlaces (`#`) por las URLs correspondientes.
+
+---
+
+# Aplicación en Producción
+
+Puedes acceder a la plataforma desplegada mediante el siguiente enlace:
+
+👉 **https://grupo-moreno.onrender.com**
+
+> Cambia este enlace si corresponde al despliegue del Sistema ESFOT.
+
+---
+
+# Arquitectura del Sistema
+
+El backend está desplegado en **Render** y se integra con diversos servicios externos para ofrecer una solución escalable y desacoplada.
+
+### Componentes principales
+
+- **Frontend Web** para la administración del sistema.
+- **Backend Node.js + Express** como API principal.
+- **Microservicio de IA** desarrollado con **Python + FastAPI**.
+- **MongoDB Atlas** para la persistencia de datos.
+- **Cloudinary** para almacenamiento multimedia.
+- **WhatsApp API** para la mensajería.
+- **n8n** para automatización mediante Webhooks.
+
+```
+Frontend
+     │
+     ▼
+Backend (Node.js + Express)
+     │
+     ├────────► MongoDB Atlas
+     │
+     ├────────► Microservicio IA (FastAPI)
+     │
+     ├────────► Cloudinary
+     │
+     ├────────► WhatsApp API
+     │
+     └────────► n8n Webhooks
+```
+
+---
+
+# Roles del Sistema
+
+## Administrador
+
+- Inicio de sesión.
+- Gestión de perfil.
+- Administración de usuarios.
+- Gestión de preguntas y respuestas (QnA).
+- Gestión de feedbacks.
+- Monitoreo del chatbot.
+- Visualización del dashboard de WhatsApp.
+- Administración de la base de conocimientos.
+
+## Pasante
+
+- Inicio de sesión.
+- Gestión de perfil.
+- Administración de preguntas frecuentes.
+- Gestión de respuestas del chatbot.
+- Registro de información académica.
+
+## Estudiante
+
+- Acceso al chatbot.
+- Consulta de información académica.
+- Consulta de información extracurricular.
+- Envío de sugerencias.
+- Envío de quejas.
+- Interacción mediante WhatsApp.
+
+---
+
+# Instalación
+
+Sigue estos pasos para ejecutar el proyecto localmente.
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/usuario/repositorio.git
+
+# 2. Entrar al proyecto
+cd backend
+
+# 3. Instalar dependencias
+npm install
+
+# 4. Configurar variables de entorno
+cp .env.example .env
+
+# Editar el archivo .env con:
+# - MongoDB Atlas
+# - JWT_SECRET
+# - Variables del microservicio IA
+# - Variables de WhatsApp
+```
+
+Ejecutar en modo desarrollo:
+
+```bash
+npm run dev
+```
+
+Ejecutar en producción:
+
+```bash
+npm start
+```
+
+---
+
+# Autores
+
+### Autora
+
+**Alessia de los Ángeles Pérez Palacios**
+
+📧 alessia.perez@epn.edu.ec
+
+### Director de Tesis
+
+**Ing. Byron Gustavo Loarte Cajamarca, MSc.**
+
+📧 byron.loarteb@epn.edu.ec
+
+**Año:** 2026
