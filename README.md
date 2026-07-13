@@ -57,7 +57,6 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 | Documento de tesis | [Ver documento](https://epnecuador-my.sharepoint.com/:b:/g/personal/elkin_diaz_epn_edu_ec/IQCAANQVab5qT567M8kgIh6zAQMmE2K3LPaGu6c9mbUhL84?e=A6jroD) |
 | Video demostrativo | [Ver video](https://www.youtube.com/watch?v=tc5cQuuCerQ&feature=youtu.be) |
 
-> **Nota:** Reemplaza los enlaces (`#`) por las URLs correspondientes.
 
 ---
 
@@ -67,7 +66,7 @@ Puedes acceder a la plataforma desplegada mediante el siguiente enlace:
 
 👉 **https://backend-jeztia.onrender.com/**
 
-> Cambia este enlace si corresponde al despliegue del Sistema ESFOT.
+
 
 ---
 
