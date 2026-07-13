@@ -47,6 +47,8 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 ├── package-lock.json
 └── package.json
 
+```
+
 # Recursos Importantes
 
 | Recurso | Enlace |
