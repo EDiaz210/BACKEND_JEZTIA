@@ -77,12 +77,11 @@ El backend está desplegado en **Render** y se integra con diversos servicios ex
 
 ### Componentes principales
 
-- **Frontend Web** para la administración del sistema.
 - **Backend Node.js + Express** como API principal.
 - **Microservicio de IA** desarrollado con **Python + FastAPI**.
 - **MongoDB Atlas** para la persistencia de datos.
 - **Cloudinary** para almacenamiento multimedia.
-- **WhatsApp API** para la mensajería.
+- **WhatsApp.js** para la mensajería.
 
 <img width="585" height="417" alt="image" src="https://github.com/user-attachments/assets/6f0987e6-72fb-41dc-8d5c-9e3d0ecfc681" />
 
@@ -115,6 +114,9 @@ El backend está desplegado en **Render** y se integra con diversos servicios ex
 - Gestión de perfil y contraseña.
 - Gestión de Mensajes e historial.
 - Gestión de Chatbot con IA.
+
+  <img width="488" height="314" alt="image" src="https://github.com/user-attachments/assets/a02905e2-ede4-4ec0-a7e1-eefe88f768f9" />
+
 
 ---
 
