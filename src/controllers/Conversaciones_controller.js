@@ -50,12 +50,6 @@ const enviarPregunta = async (req, res) => {
 
     const preguntaLimpia = question.trim();
 
-    if (!preguntaLimpia.startsWith("¿")) {
-      return res.status(400).json({ 
-        error: "El texto ingresado debe comenzar con el signo de interrogación de apertura '¿'." 
-      });
-    }
-
     if (/\d/.test(preguntaLimpia)) {
       return res.status(400).json({
         error: "La pregunta no puede contener números."
