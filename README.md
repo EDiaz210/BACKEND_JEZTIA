@@ -25,3 +25,25 @@ El backend está diseñado bajo una arquitectura modular y orientada a servicios
 * **Seguridad de Red:** Implementación de CORS y validación de variables de entorno (`dotenv`).
 * **Arquitectura:** Integración con microservicio externo (Python / FastAPI) para tareas de IA.
 * **Base de Datos:** *[Inserta aquí tu base de datos, ej: MySQL / MongoDB]* para la persistencia de datos, usuarios y configuración de respuestas.
+
+#### Estructura del Backend
+
+```bash
+BACKEND_...STER
+└── src
+    ├── config
+    ├── controllers
+    ├── helpers
+    ├── middlewares
+    ├── models
+    ├── routers
+    ├── utils
+    ├── database.js
+    ├── index.js
+    └── server.js
+├── .env.example
+├── .gitignore
+├── .nodemon.json
+├── fix.whatsapp.js
+├── package-lock.json
+└── package.json
